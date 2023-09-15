@@ -32,7 +32,7 @@ internal class ConsoleDrawer
         Box[point.Y, point.X] = c;
     }
 
-    public void Draw()
+    public void DrawBox()
     {
         for (int i = 0; i < Box.GetLength(0); i++)
         {

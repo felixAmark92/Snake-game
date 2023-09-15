@@ -8,4 +8,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="FelixLibrary">
+      <HintPath>..\..\..\..\Documents\GitHub\FelixLibrary\FelixLibrary\bin\Debug\net7.0\FelixLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
