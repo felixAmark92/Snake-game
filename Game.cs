@@ -127,7 +127,6 @@ internal static class Game
     {
         char[,] charBox = new char[height, width];
 
-
         int j;
         for (int i = 0; i < height; i++)
         {
@@ -143,11 +142,9 @@ internal static class Game
                 {
                     charBox[i, j] = ' ';
                 }
-
             }
             charBox[i, j] = '#';
         }
-
         return charBox;
     }
 }
