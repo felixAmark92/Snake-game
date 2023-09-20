@@ -11,7 +11,6 @@ internal static class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         int selection;
-        long score;
         var mainMenu = new MenuSelection();
         List<PlayerScore>? leaderboard;
 
@@ -44,7 +43,7 @@ internal static class Program
 
             if (selection == 0)
             {
-                score = Game.Run();
+                var score = Game.Run();
 
                 if (leaderboard.Count >= 10 && score <= leaderboard.Last().Score)
                     continue;
