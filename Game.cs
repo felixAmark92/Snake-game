@@ -6,7 +6,7 @@ internal static class Game
     {
         //Instantiate
         long score = 0;
-        var consoleDrawer = new ConsoleDrawer(GetBox(40, 20));
+        var consoleDrawer = new ConsoleDrawer(GetBox(13, 13));
         var playerSnake = new LinkedList<Point>();
         var playerDirection = Direction.Right;
         bool gotApple = true;
@@ -54,7 +54,7 @@ internal static class Game
 
             playerSnake.AddFirst(playerSnake.First().Copy());
             consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ConsoleColor.Green);
-            Thread.Sleep(100);
+            Thread.Sleep(200);
         }
 
         Console.Clear();
@@ -121,7 +121,7 @@ internal static class Game
             return;
         }
 
-        consoleDrawer.UpdateScreenAt(apple, 'O', ConsoleColor.Red);
+        consoleDrawer.UpdateScreenAt(apple,'O', ConsoleColor.Red);
     }
     static char[,] GetBox(int width, int height)
     {
