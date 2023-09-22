@@ -46,7 +46,7 @@ internal static class Game
                 //Game over
                 break;
             }
-            else if (consoleDrawer.PointContains(playerSnake.First(), 'O'))
+            if (consoleDrawer.PointContains(playerSnake.First(), 'O'))
             {
                 score += 100;
                 gotApple = true;
@@ -115,11 +115,11 @@ internal static class Game
         }
     }
 
-    static void SetRandomApple(ConsoleDrawer consoleDrawer)
+    private static void SetRandomApple(ConsoleDrawer consoleDrawer)
     {
         var rand = new Random();
 
-        Point apple = new Point(rand.Next(1, consoleDrawer.Box.GetLength(1) - 1), rand.Next(1, consoleDrawer.Box.GetLength(0) - 1));
+        var apple = new Point(rand.Next(1, consoleDrawer.Box.GetLength(1) - 1), rand.Next(1, consoleDrawer.Box.GetLength(0) - 1));
 
         if (consoleDrawer.Box[apple.Y, apple.X] == '@')
         {
@@ -153,12 +153,4 @@ internal static class Game
         }
         return charBox;
     }
-}
-
-public enum Direction
-{
-    Left,
-    Right,
-    Up,
-    Down
 }
