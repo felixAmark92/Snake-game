@@ -6,11 +6,11 @@ internal static class Game
     {
         //Instantiate
         long score = 0;
-        var consoleDrawer = new ConsoleDrawer(GetBox(13, 13));
+        var consoleDrawer = new ConsoleDrawer(GetBox(30, 20));
         var playerSnake = new LinkedList<Point>();
         var playerDirection = Direction.Right;
         bool gotApple = true;
-
+        uint colorIndex = uint.MaxValue;
         Console.Clear();
         consoleDrawer.DrawBox();
         Console.CursorVisible = false;
@@ -51,10 +51,16 @@ internal static class Game
                 score += 100;
                 gotApple = true;
             }
+            foreach (var item in playerSnake)
+            {
+                consoleDrawer.UpdateScreenAt(item, '@', ColorLoop.GetColor());
+            }
 
             playerSnake.AddFirst(playerSnake.First().Copy());
-            consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ConsoleColor.Green);
-            Thread.Sleep(200);
+            consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ColorLoop.GetColor());
+            colorIndex -= 2;
+            ColorLoop.SetIndex(colorIndex);
+            Thread.Sleep(100);
         }
 
         Console.Clear();
