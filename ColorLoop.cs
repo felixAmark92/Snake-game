@@ -12,35 +12,36 @@ internal static class ColorLoop
 {
     private static uint _colorIndex = 0;
 
-    private static List<ConsoleColor> _colors = new List<ConsoleColor>()
+    //private static readonly ConsoleColor[] _colors = new ConsoleColor[]
+    //{
+
+    //    ConsoleColor.Green,
+    //    ConsoleColor.DarkGreen
+    //};
+
+    private static readonly ConsoleColor[] _colors = new ConsoleColor[]
     {
-        ConsoleColor.DarkBlue,
         ConsoleColor.Blue,
-        ConsoleColor.DarkCyan,
         ConsoleColor.Cyan,
-        ConsoleColor.DarkMagenta,
         ConsoleColor.Magenta,
-        ConsoleColor.DarkRed,
         ConsoleColor.Red,
-        ConsoleColor.DarkYellow,
         ConsoleColor.Yellow,
-        ConsoleColor.DarkGreen,
         ConsoleColor.Green,
     };
 
-    //private static List<ConsoleColor> _colors = new List<ConsoleColor>()
+    //private static ConsoleColor[] _colors = new ConsoleColor[]
     //{
+    //    ConsoleColor.Yellow,
+    //    ConsoleColor.Yellow,
     //    ConsoleColor.Blue,
     //    ConsoleColor.Blue,
-    //    ConsoleColor.White,
-    //    ConsoleColor.White,
 
     //};
 
     public static ConsoleColor GetColor()
     {
         _colorIndex++;
-        if (_colorIndex >= _colors.Count)
+        if (_colorIndex >= _colors.Length)
         {
             _colorIndex = 0;
         }
@@ -50,13 +51,13 @@ internal static class ColorLoop
 
     public static void SetIndex(uint index)
     {
-        if (_colors.Count == 0)
+        if (_colors.Length == 0)
         {
             _colorIndex = 0;
         }
         else
         {
-            _colorIndex = index % (uint)_colors.Count;
+            _colorIndex = index % (uint)_colors.Length;
             Debug.WriteLine(_colorIndex);
         }
     }

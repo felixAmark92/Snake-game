@@ -19,8 +19,6 @@ internal static class Program
         mainMenu.Add("Quit");
 
 
-
-
         if (File.Exists(LEADERBOARD))
         {
             string jsonText = File.ReadAllText(LEADERBOARD);

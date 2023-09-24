@@ -10,7 +10,7 @@ internal static class Game
         var playerSnake = new LinkedList<Point>();
         var playerDirection = Direction.Right;
         bool gotApple = true;
-        uint colorIndex = uint.MaxValue;
+        uint colorIndex = 0;
         Console.Clear();
         consoleDrawer.DrawBox();
         Console.CursorVisible = false;
@@ -51,15 +51,18 @@ internal static class Game
                 score += 100;
                 gotApple = true;
             }
-            foreach (var item in playerSnake)
+
+            
+
+            playerSnake.AddFirst(playerSnake.First().Copy());
+            consoleDrawer.UpdateScreenAt(playerSnake.First(), '@');
+
+            ColorLoop.SetIndex(0);
+            foreach (Point item in playerSnake)
             {
                 consoleDrawer.UpdateScreenAt(item, '@', ColorLoop.GetColor());
             }
-
-            playerSnake.AddFirst(playerSnake.First().Copy());
-            consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ColorLoop.GetColor());
-            colorIndex -= 2;
-            ColorLoop.SetIndex(colorIndex);
+            ;
             Thread.Sleep(100);
         }
 
@@ -89,8 +92,6 @@ internal static class Game
             case Direction.Down:
                 playerPosition.Y++;
                 break;
-            default:
-                break;
         }
     }
 
@@ -109,8 +110,6 @@ internal static class Game
                 break;
             case ConsoleKey.RightArrow:
                 playerDirection = playerDirection == Direction.Left ? Direction.Left : Direction.Right;
-                break;
-            default:
                 break;
         }
     }
@@ -133,10 +132,9 @@ internal static class Game
     {
         char[,] charBox = new char[height, width];
 
-        int j;
         for (int i = 0; i < height; i++)
         {
-            j = 0;
+            int j = 0;
             charBox[i, j] = '#';
             for (j = 1; j < width - 1; j++)
             {
