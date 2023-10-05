@@ -10,7 +10,6 @@ internal static class Program
     private static void Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
-        int selection;
         var mainMenu = new MenuSelection();
         List<PlayerScore>? leaderboard;
 
@@ -37,7 +36,7 @@ internal static class Program
         
         while (true)
         {
-            selection = mainMenu.RunMenuSelection();
+            var selection = mainMenu.RunMenuSelection();
 
             if (selection == 0)
             {
@@ -46,34 +45,41 @@ internal static class Program
                 if (leaderboard.Count >= 10 && score <= leaderboard.Last().Score)
                     continue;
 
-                Console.WriteLine("Enter your player name");
+                Console.Write("New HighScore! Enter your player name: ");
                 var playerScore = new PlayerScore(score, Console.ReadLine());
 
                 leaderboard.Add(playerScore);
                 
-                string jsonfile = JsonSerializer.Serialize(leaderboard);
+                string contents = JsonSerializer.Serialize(leaderboard);
                 leaderboard.Sort((person1, person2) => person1.Score.CompareTo(person2.Score));
                 leaderboard.Reverse();
                 if (leaderboard.Count > 10)
                     leaderboard.Remove(leaderboard.Last());
 
-                File.WriteAllText(LEADERBOARD, jsonfile);
+                File.WriteAllText(LEADERBOARD, contents);
+                Leaderboard(leaderboard);
 
             }
 
             if (selection == 1)
             {
-                Console.Clear();
-                for (int i = 0; i < leaderboard.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {leaderboard[i].PlayerName}: {leaderboard[i].Score}");
-                }
-                Console.ReadKey();
-
+                Leaderboard(leaderboard);
             }
 
             if (selection == 2)
+                //Quit
                 break;
         }
+    }
+
+    private static void Leaderboard(List<PlayerScore> leaderboard)
+    {
+        Console.Clear();
+        for (int i = 0; i < leaderboard.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {leaderboard[i].PlayerName}: {leaderboard[i].Score}");
+        }
+
+        Console.ReadKey(true);
     }
 }

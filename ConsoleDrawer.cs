@@ -31,6 +31,13 @@ internal class ConsoleDrawer
         Console.ResetColor();
         Box[point.Y, point.X] = c;
     }
+    public void UpdateScreenAt(Point point, string s)
+    {
+        Console.CursorLeft = point.X;
+        Console.CursorTop = point.Y;
+        Console.Write(s);
+
+    }
 
     public void DrawBox()
     {

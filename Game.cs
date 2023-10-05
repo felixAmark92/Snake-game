@@ -20,7 +20,7 @@ internal static class Game
             consoleDrawer.Box.GetLength(1) / 2,
             consoleDrawer.Box.GetLength(0) / 2));
 
-        SetDirection(ref playerDirection, Console.ReadKey().Key);
+        SetDirection(ref playerDirection, Console.ReadKey(true).Key);
         //Game loop
         while (true)
         {
@@ -37,12 +37,23 @@ internal static class Game
 
             if (Console.KeyAvailable)
             {
-                SetDirection(ref playerDirection, Console.ReadKey().Key);
+                SetDirection(ref playerDirection, Console.ReadKey(true).Key);
             }
             SetPosition(playerDirection, playerSnake.First());
 
             if (consoleDrawer.PointContains(playerSnake.First(), '#', '@'))
             {
+                while (true)
+                {
+                    consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "  ");
+                    playerSnake.RemoveFirst();
+                    if (playerSnake.First == null)
+                    {
+                        break;
+                    }
+                    consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "\ud83d\udca5");
+                    Thread.Sleep(100);
+                }
                 //Game over
                 break;
             }
@@ -51,19 +62,18 @@ internal static class Game
                 score += 100;
                 gotApple = true;
             }
-
             
-
             playerSnake.AddFirst(playerSnake.First().Copy());
-            consoleDrawer.UpdateScreenAt(playerSnake.First(), '@');
+            consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ConsoleColor.Green);
 
-            ColorLoop.SetIndex(0);
-            foreach (Point item in playerSnake)
-            {
-                consoleDrawer.UpdateScreenAt(item, '@', ColorLoop.GetColor());
-            }
+            //ColorLoop.SetIndex(0);
+            //foreach (Point item in playerSnake)
+            //{
+            //    consoleDrawer.UpdateScreenAt(item, '@', ColorLoop.GetColor());
+            //}
             ;
             Thread.Sleep(100);
+            colorIndex -= 2;
         }
 
         Console.Clear();
@@ -75,6 +85,9 @@ internal static class Game
         //functions
 
     }
+
+
+    
 
     static void SetPosition(Direction playerDirection, Point playerPosition)
     {
@@ -95,6 +108,7 @@ internal static class Game
         }
     }
 
+
     static void SetDirection(ref Direction playerDirection, ConsoleKey key)
     {
         switch (key)
@@ -114,6 +128,7 @@ internal static class Game
         }
     }
 
+
     private static void SetRandomApple(ConsoleDrawer consoleDrawer)
     {
         var rand = new Random();
@@ -128,6 +143,7 @@ internal static class Game
 
         consoleDrawer.UpdateScreenAt(apple,'O', ConsoleColor.Red);
     }
+
     static char[,] GetBox(int width, int height)
     {
         char[,] charBox = new char[height, width];
