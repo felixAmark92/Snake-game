@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Snake_game;
 
-internal class ConsoleDrawer
+public class ConsoleDrawer
 {
     public char[,] Box { get; private set; }
 

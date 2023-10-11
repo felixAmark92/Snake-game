@@ -1,65 +1,148 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Snake_game;
 
 public class Snake
 {
+    public bool IsDead { get; set; }
+    public bool GotApple { get; set; }
+    public Queue<ConsoleKey> KeyQueue { get; } = new Queue<ConsoleKey>();
+
     private LinkedList<Point> Body { get;  } = new LinkedList<Point>();
     private Direction Direction { get; set; }
-    private Queue<ConsoleKey> KeyQueue { get; } = new Queue<ConsoleKey>();
+    private ConsoleColor Color { get; }
+    private ControlScheme ControlScheme { get;}
+    private Point StartPoint { get; set; }
 
 
-    private async Task SetKey()
+    public Snake(Point startingPoint, ConsoleColor color, ControlScheme controlScheme)
     {
-        while (!GameOver)
+        StartPoint = startingPoint;
+        Body.AddFirst(startingPoint);
+        Direction = Direction.Up;
+        Color = color;
+        ControlScheme = controlScheme;
+    }
+
+
+
+    public void UpdatePosition(ConsoleDrawer consoleDrawer)
+    {
+        Body.AddFirst(Body.First().Copy());
+
+        if (!GotApple)
         {
-            var key = Console.ReadKey().Key;
-            if (KeyQueue.Count < 2)
+           
+            consoleDrawer.UpdateScreenAt(Body.Last(), ' ');
+            Body.RemoveLast();
+        }
+        else
+        {
+            GotApple = false;
+        }
+
+
+        if (KeyQueue.Count > 0)
+        {
+            SetDirection(KeyQueue.Dequeue());
+        }
+        
+
+        SetPosition();
+
+        if (consoleDrawer.PointContains(Body.First(), '#', '@'))
+        {
+            bool toggle = true;
+            while (Body.Count != 1)
             {
-                KeyQueue.Enqueue(key);
+
+
+                if (toggle)
+                {
+                    consoleDrawer.UpdateScreenAt(Body.Last(), ' ');
+                }
+                else
+                {
+                    consoleDrawer.UpdateScreenAt(Body.Last(), 'O', ConsoleColor.Red);
+                }
+                Body.RemoveLast();
+                toggle = !toggle;
+
             }
-        }
-    }
 
-    void SetDirection( ConsoleKey key)
-    {
-        switch (key)
+            Body.Clear();
+
+            Body.AddFirst(StartPoint);
+
+        }
+        else
         {
-            case ConsoleKey.DownArrow:
-                Direction = Direction == Direction.Up ? Direction.Up : Direction.Down;
-                break;
-            case ConsoleKey.UpArrow:
-                Direction = Direction == Direction.Down ? Direction.Down : Direction.Up;
-                break;
-            case ConsoleKey.LeftArrow:
-                Direction = Direction == Direction.Right ? Direction.Right : Direction.Left;
-                break;
-            case ConsoleKey.RightArrow:
-                Direction = Direction == Direction.Left ? Direction.Left : Direction.Right;
-                break;
+            if (consoleDrawer.PointContains(Body.First(), 'O'))
+            {
+                GotApple = true;
+            }
+
+            consoleDrawer.UpdateScreenAt(Body.First(), '@', Color);
+
+            
         }
+
     }
 
-    private void SetPosition(Direction playerDirection, Point playerPosition)
+
+    public bool ValidKey(ConsoleKey key)
     {
-        switch (playerDirection)
+        return (
+            key == ControlScheme.LeftKey  || 
+            key == ControlScheme.RightKey || 
+            key == ControlScheme.UpKey || 
+            key == ControlScheme.DownKey);
+    }
+
+    private void SetDirection( ConsoleKey key)
+    {
+
+        if (key == ControlScheme.UpKey)
+        {
+            Direction = Direction == Direction.Down ? Direction.Down : Direction.Up;
+        }
+        else if (key == ControlScheme.DownKey)
+        {
+            Direction = Direction == Direction.Up ? Direction.Up : Direction.Down;
+        }
+        else if (key == ControlScheme.LeftKey)
+        {
+            Direction = Direction == Direction.Right ? Direction.Right : Direction.Left;
+        }
+        else if (key == ControlScheme.RightKey)
+        {
+            Direction = Direction == Direction.Left ? Direction.Left : Direction.Right;
+        }
+
+    }
+
+    private void SetPosition()
+    {
+        switch (Direction)
         {
             case Direction.Left:
-                playerPosition.X--;
+                Body.First().X--;
                 break;
             case Direction.Right:
-                playerPosition.X++;
+                Body.First().X++;
                 break;
             case Direction.Up:
-                playerPosition.Y--;
+                Body.First().Y--;
                 break;
             case Direction.Down:
-                playerPosition.Y++;
+                Body.First().Y++;
                 break;
         }
     }

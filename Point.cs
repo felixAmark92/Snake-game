@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Snake_game;
 
 //Point class because stupid Point in system.drawing is a struct and is causing problems
-internal class Point
+public class Point
 {
     public int X {  get; set; }
     public int Y { get; set; }

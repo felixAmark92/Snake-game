@@ -2,98 +2,104 @@
 using System.Windows.Input;
 using static System.Net.Mime.MediaTypeNames;
 
-internal static class Game
+public static class Game
 {
-
-    private static bool GameOver { get; set; }
+    private static bool GameIsRunning { get; set; }
     public static async Task<long> Run()
     {
-        GameOver = false;
+        GameIsRunning = true;
+
+
+        var controlScheme2 = new ControlScheme(ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D);
+
+        var controlScheme = new ControlScheme(ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow);
 
         //Instantiate
         long score = 0;
-        var consoleDrawer = new ConsoleDrawer(GetBox(30, 20));
-        var playerSnake = new LinkedList<Point>();
-        var playerDirection = Direction.Right;
-        bool gotApple = true;
+        var consoleDrawer = new ConsoleDrawer(GetBox(50, 25));
+        
         Console.Clear();
         consoleDrawer.DrawBox();
         Console.CursorVisible = false;
 
-        playerSnake.AddFirst(
+        var playerSnake = new Snake(
             new Point(
-            consoleDrawer.Box.GetLength(1) / 2,
-            consoleDrawer.Box.GetLength(0) / 2));
+                consoleDrawer.Box.GetLength(1) / 2,
+                consoleDrawer.Box.GetLength(0) / 2),
+            ConsoleColor.DarkMagenta,
+            controlScheme);
 
-        Task.Run(SetKey); 
+        var playerSnake2 = new Snake(
+            new Point(
+                consoleDrawer.Box.GetLength(1) / 4,
+                consoleDrawer.Box.GetLength(0) / 2),
+            ConsoleColor.Green,
+            controlScheme2);
+
+
+        for (int i = 0; i < 10; i++)
+        {
+            SetRandomApple(consoleDrawer);
+        }
+
+
+        Task.Run(SetKey);
+
+        Task.Yield();
         //Game loop
         while (true)
         {
-            if (gotApple)
+            if (!playerSnake2.IsDead)
             {
-                SetRandomApple(consoleDrawer);
-                gotApple = false;
-            }
-            else
-            {
-                consoleDrawer.UpdateScreenAt(playerSnake.Last(), ' ');
-                playerSnake.RemoveLast();
+                playerSnake2.UpdatePosition(consoleDrawer);
             }
 
-            if (KeyQueue.Count > 0)
+            if (!playerSnake.IsDead)
             {
-                SetDirection(ref playerDirection, KeyQueue.Dequeue());
+                playerSnake.UpdatePosition(consoleDrawer);
             }
             
-            SetPosition(playerDirection, playerSnake.First());
 
-            if (consoleDrawer.PointContains(playerSnake.First(), '#', '@'))
+            if (playerSnake.GotApple || playerSnake2.GotApple)
             {
-                //Game over
-                while (true)
-                {
-                    GameOver = true;
-                    consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "  ");
-                    playerSnake.RemoveFirst();
-                    if (playerSnake.First == null)
-                    {
-                        break;
-                    }
-                    consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "\ud83d\udca5");
-                    await Task.Delay(100);
-                }
-
-                break;
-            }
-            if (consoleDrawer.PointContains(playerSnake.First(), 'O'))
-            {
-                score += 100;
-                gotApple = true;
+                SetRandomApple(consoleDrawer);
             }
 
-            playerSnake.AddFirst(playerSnake.First().Copy());
-            consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ConsoleColor.Green);
+            if (playerSnake.IsDead && playerSnake2.IsDead)
+            {
+                GameIsRunning = false;
+                Console.Clear();
+                Console.WriteLine("Game over!");
+                Console.ReadKey(true);
+                return score;
+
+            }
 
             await Task.Delay(100);
         }
 
-        Console.Clear();
-        Console.WriteLine("Game over!");
-        Console.ReadLine();
+        async Task SetKey()
+        {
+            while (GameIsRunning)
+            {
+                var key = Console.ReadKey(true).Key;
 
-        return score;
 
-        //functions
+                if (playerSnake2.KeyQueue.Count < 2 && playerSnake2.ValidKey(key))
+                {
+                    playerSnake2.KeyQueue.Enqueue(key);
+                }
+                if (playerSnake.KeyQueue.Count < 2 && playerSnake.ValidKey(key))
+                {
+                    playerSnake.KeyQueue.Enqueue(key);
+                }
+            }
+        }
+
 
     }
 
-
-
-
-
-
-
-
+    
 
     private static void SetRandomApple(ConsoleDrawer consoleDrawer)
     {
