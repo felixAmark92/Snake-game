@@ -10,7 +10,7 @@ internal static class Game
         var playerSnake = new LinkedList<Point>();
         var playerDirection = Direction.Right;
         bool gotApple = true;
-        uint colorIndex = 0;
+        uint colorIndex = 60;
         Console.Clear();
         consoleDrawer.DrawBox();
         Console.CursorVisible = false;
@@ -43,6 +43,7 @@ internal static class Game
 
             if (consoleDrawer.PointContains(playerSnake.First(), '#', '@'))
             {
+                //Game over
                 while (true)
                 {
                     consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "  ");
@@ -54,7 +55,7 @@ internal static class Game
                     consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "\ud83d\udca5");
                     Thread.Sleep(100);
                 }
-                //Game over
+                
                 break;
             }
             if (consoleDrawer.PointContains(playerSnake.First(), 'O'))
@@ -66,14 +67,13 @@ internal static class Game
             playerSnake.AddFirst(playerSnake.First().Copy());
             consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ConsoleColor.Green);
 
-            //ColorLoop.SetIndex(0);
-            //foreach (Point item in playerSnake)
-            //{
-            //    consoleDrawer.UpdateScreenAt(item, '@', ColorLoop.GetColor());
-            //}
+            ColorLoop.SetIndex(1000);
+            foreach (Point item in playerSnake)
+            {
+                consoleDrawer.UpdateScreenAt(item, '@', ColorLoop.GetColor());
+            }
             ;
             Thread.Sleep(100);
-            colorIndex -= 2;
         }
 
         Console.Clear();
@@ -85,9 +85,6 @@ internal static class Game
         //functions
 
     }
-
-
-    
 
     static void SetPosition(Direction playerDirection, Point playerPosition)
     {
@@ -140,7 +137,6 @@ internal static class Game
             SetRandomApple(consoleDrawer);
             return;
         }
-
         consoleDrawer.UpdateScreenAt(apple,'O', ConsoleColor.Red);
     }
 
