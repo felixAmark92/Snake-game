@@ -1,16 +1,21 @@
 ﻿using Snake_game;
+using System.Windows.Input;
+using static System.Net.Mime.MediaTypeNames;
 
 internal static class Game
 {
-    public static long Run()
+
+    private static bool GameOver { get; set; }
+    public static async Task<long> Run()
     {
+        GameOver = false;
+
         //Instantiate
         long score = 0;
         var consoleDrawer = new ConsoleDrawer(GetBox(30, 20));
         var playerSnake = new LinkedList<Point>();
         var playerDirection = Direction.Right;
         bool gotApple = true;
-        uint colorIndex = 60;
         Console.Clear();
         consoleDrawer.DrawBox();
         Console.CursorVisible = false;
@@ -20,7 +25,7 @@ internal static class Game
             consoleDrawer.Box.GetLength(1) / 2,
             consoleDrawer.Box.GetLength(0) / 2));
 
-        SetDirection(ref playerDirection, Console.ReadKey(true).Key);
+        Task.Run(SetKey); 
         //Game loop
         while (true)
         {
@@ -35,10 +40,11 @@ internal static class Game
                 playerSnake.RemoveLast();
             }
 
-            if (Console.KeyAvailable)
+            if (KeyQueue.Count > 0)
             {
-                SetDirection(ref playerDirection, Console.ReadKey(true).Key);
+                SetDirection(ref playerDirection, KeyQueue.Dequeue());
             }
+            
             SetPosition(playerDirection, playerSnake.First());
 
             if (consoleDrawer.PointContains(playerSnake.First(), '#', '@'))
@@ -46,6 +52,7 @@ internal static class Game
                 //Game over
                 while (true)
                 {
+                    GameOver = true;
                     consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "  ");
                     playerSnake.RemoveFirst();
                     if (playerSnake.First == null)
@@ -53,9 +60,9 @@ internal static class Game
                         break;
                     }
                     consoleDrawer.UpdateScreenAt(playerSnake.First.Value, "\ud83d\udca5");
-                    Thread.Sleep(100);
+                    await Task.Delay(100);
                 }
-                
+
                 break;
             }
             if (consoleDrawer.PointContains(playerSnake.First(), 'O'))
@@ -63,17 +70,11 @@ internal static class Game
                 score += 100;
                 gotApple = true;
             }
-            
+
             playerSnake.AddFirst(playerSnake.First().Copy());
             consoleDrawer.UpdateScreenAt(playerSnake.First(), '@', ConsoleColor.Green);
 
-            ColorLoop.SetIndex(1000);
-            foreach (Point item in playerSnake)
-            {
-                consoleDrawer.UpdateScreenAt(item, '@', ColorLoop.GetColor());
-            }
-            ;
-            Thread.Sleep(100);
+            await Task.Delay(100);
         }
 
         Console.Clear();
@@ -86,44 +87,12 @@ internal static class Game
 
     }
 
-    static void SetPosition(Direction playerDirection, Point playerPosition)
-    {
-        switch (playerDirection)
-        {
-            case Direction.Left:
-                playerPosition.X--;
-                break;
-            case Direction.Right:
-                playerPosition.X++;
-                break;
-            case Direction.Up:
-                playerPosition.Y--;
-                break;
-            case Direction.Down:
-                playerPosition.Y++;
-                break;
-        }
-    }
 
 
-    static void SetDirection(ref Direction playerDirection, ConsoleKey key)
-    {
-        switch (key)
-        {
-            case ConsoleKey.DownArrow:
-                playerDirection = playerDirection == Direction.Up ? Direction.Up : Direction.Down;
-                break;
-            case ConsoleKey.UpArrow:
-                playerDirection = playerDirection == Direction.Down ? Direction.Down : Direction.Up;
-                break;
-            case ConsoleKey.LeftArrow:
-                playerDirection = playerDirection == Direction.Right ? Direction.Right : Direction.Left;
-                break;
-            case ConsoleKey.RightArrow:
-                playerDirection = playerDirection == Direction.Left ? Direction.Left : Direction.Right;
-                break;
-        }
-    }
+
+
+
+
 
 
     private static void SetRandomApple(ConsoleDrawer consoleDrawer)
@@ -137,7 +106,7 @@ internal static class Game
             SetRandomApple(consoleDrawer);
             return;
         }
-        consoleDrawer.UpdateScreenAt(apple,'O', ConsoleColor.Red);
+        consoleDrawer.UpdateScreenAt(apple, 'O', ConsoleColor.Red);
     }
 
     static char[,] GetBox(int width, int height)

@@ -42,11 +42,11 @@ internal static class Program
             {
                 var score = Game.Run();
 
-                if (leaderboard.Count >= 10 && score <= leaderboard.Last().Score)
+                if (leaderboard.Count >= 10 && score.Result <= leaderboard.Last().Score)
                     continue;
 
                 Console.Write("New HighScore! Enter your player name: ");
-                var playerScore = new PlayerScore(score, Console.ReadLine());
+                var playerScore = new PlayerScore(score.Result, Console.ReadLine());
 
                 leaderboard.Add(playerScore);
                 
