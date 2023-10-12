@@ -25,7 +25,7 @@ public class Snake
     public bool GotSnakeApple { get; set; }
     public Queue<ConsoleKey> KeyQueue { get; } = new Queue<ConsoleKey>();
     public LinkedList<Point> Body { get;  } = new LinkedList<Point>();
-    private Direction Direction { get; set; }
+    private Direction Direction { get; set; } = Direction.Idle;
     private ConsoleColor Color { get; }
     private ControlScheme ControlScheme { get;}
     private Point StartPoint { get; set; }
@@ -35,7 +35,6 @@ public class Snake
     {
         StartPoint = startingPoint;
         Body.AddFirst(startingPoint);
-        Direction = Direction.Up;
         Color = color;
         ControlScheme = controlScheme;
         Name = name;
