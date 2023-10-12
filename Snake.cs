@@ -11,76 +11,79 @@ namespace Snake_game;
 
 public class Snake
 {
+
+    public long Score
+    {
+        get
+        {
+            return Body.Count() * 100;
+        }
+    }
+    public string Name { get; private set; }
     public bool IsDead { get; set; }
     public bool GotApple { get; set; }
+    public bool GotSnakeApple { get; set; }
     public Queue<ConsoleKey> KeyQueue { get; } = new Queue<ConsoleKey>();
-
-    private LinkedList<Point> Body { get;  } = new LinkedList<Point>();
+    public LinkedList<Point> Body { get;  } = new LinkedList<Point>();
     private Direction Direction { get; set; }
     private ConsoleColor Color { get; }
     private ControlScheme ControlScheme { get;}
     private Point StartPoint { get; set; }
 
 
-    public Snake(Point startingPoint, ConsoleColor color, ControlScheme controlScheme)
+    public Snake(Point startingPoint, ConsoleColor color, ControlScheme controlScheme, string name)
     {
         StartPoint = startingPoint;
         Body.AddFirst(startingPoint);
         Direction = Direction.Up;
         Color = color;
         ControlScheme = controlScheme;
+        Name = name;
     }
 
 
 
     public void UpdatePosition(ConsoleDrawer consoleDrawer)
     {
-        Body.AddFirst(Body.First().Copy());
-
-        if (!GotApple)
-        {
-           
-            consoleDrawer.UpdateScreenAt(Body.Last(), ' ');
-            Body.RemoveLast();
-        }
-        else
-        {
-            GotApple = false;
-        }
-
-
         if (KeyQueue.Count > 0)
         {
             SetDirection(KeyQueue.Dequeue());
         }
-        
+
+        if (Direction == Direction.Idle)
+        {
+            return;
+        }
+
+
+        Body.AddFirst(Body.First().Copy());
+
+        if (GotApple || GotSnakeApple)
+        {
+            GotApple = false;
+            GotSnakeApple = false;
+        }
+        else
+        {
+            consoleDrawer.UpdateScreenAt(Body.Last(), ' ');
+            Body.RemoveLast();
+        }
 
         SetPosition();
 
+    }
+
+    public void CheckCollision(ConsoleDrawer consoleDrawer)
+    {
+        if (Direction == Direction.Idle)
+        {
+            consoleDrawer.UpdateScreenAt(Body.First(), '@', Color);
+            return;
+        }
+
         if (consoleDrawer.PointContains(Body.First(), '#', '@'))
         {
-            bool toggle = true;
-            while (Body.Count != 1)
-            {
-
-
-                if (toggle)
-                {
-                    consoleDrawer.UpdateScreenAt(Body.Last(), ' ');
-                }
-                else
-                {
-                    consoleDrawer.UpdateScreenAt(Body.Last(), 'O', ConsoleColor.Red);
-                }
-                Body.RemoveLast();
-                toggle = !toggle;
-
-            }
-
-            Body.Clear();
-
-            Body.AddFirst(StartPoint);
-
+           IsDead = true;
         }
         else
         {
@@ -88,11 +91,47 @@ public class Snake
             {
                 GotApple = true;
             }
+            else if (consoleDrawer.PointContains(Body.First(), 'o'))
+            {
+                GotSnakeApple = true;
+            }
 
             consoleDrawer.UpdateScreenAt(Body.First(), '@', Color);
 
-            
+
         }
+
+    }
+
+    public void OnDeath(ConsoleDrawer consoleDrawer, Point spawnPoint)
+    {
+        if (Direction == Direction.Idle)
+        {
+            return;
+        }
+        bool toggle = true;
+        while (Body.Count != 1)
+        {
+
+
+            if (toggle)
+            {
+                consoleDrawer.UpdateScreenAt(Body.Last(), ' ');
+            }
+            else
+            {
+                consoleDrawer.UpdateScreenAt(Body.Last(), 'o', ConsoleColor.Red);
+            }
+            Body.RemoveLast();
+            toggle = !toggle;
+
+        }
+
+        Body.Clear();
+        Body.AddFirst(spawnPoint);
+        Direction = Direction.Idle;
+
+        IsDead = false;
 
     }
 

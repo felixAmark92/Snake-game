@@ -1,5 +1,8 @@
-﻿public enum Direction
+﻿namespace Snake_game;
+
+public enum Direction
 {
+    Idle,
     Left,
     Right,
     Up,

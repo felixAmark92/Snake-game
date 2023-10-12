@@ -1,15 +1,18 @@
-﻿using FelixLibrary;
+﻿using System.Text;
 using System.Text.Json;
+using FelixLibrary;
 
-using Snake_game;
-using System.Text;
+namespace Snake_game;
 
 internal static class Program
 {
     const string LEADERBOARD = "leaderboard.json";
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
+
+        Console.WindowWidth = Console.LargestWindowWidth;
+        
         var mainMenu = new MenuSelection();
         List<PlayerScore>? leaderboard;
 
@@ -40,13 +43,13 @@ internal static class Program
 
             if (selection == 0)
             {
-                var score = Game.Run();
+                 var score = await Game.Run();
 
-                if (leaderboard.Count >= 10 && score.Result <= leaderboard.Last().Score)
+                if (leaderboard.Count >= 10 && score <= leaderboard.Last().Score)
                     continue;
 
                 Console.Write("New HighScore! Enter your player name: ");
-                var playerScore = new PlayerScore(score.Result, Console.ReadLine());
+                var playerScore = new PlayerScore(score, Console.ReadLine());
 
                 leaderboard.Add(playerScore);
                 

@@ -31,12 +31,25 @@ public class ConsoleDrawer
         Console.ResetColor();
         Box[point.Y, point.X] = c;
     }
-    public void UpdateScreenAt(Point point, string s)
+    public void UpdateScreenAt(Point point, string value)
     {
         Console.CursorLeft = point.X;
         Console.CursorTop = point.Y;
-        Console.Write(s);
+        Console.Write(value);
+    }
 
+    public Point GetRandomUnoccupiedPoint()
+    {
+        var random = new Random();
+        while (true)
+        {
+            var point = new Point(random.Next(1, Box.GetLength(1) - 1), random.Next(1, Box.GetLength(0) - 1));
+
+            if (PointContains(point, ' '))
+            {
+                return point;
+            }
+        }
     }
 
     public void DrawBox()
@@ -51,12 +64,12 @@ public class ConsoleDrawer
         }
     }
 
-    public bool PointContains(Point point, char c)
+    public bool PointContains(Point point, char value)
     {
-        return (Box[point.Y, point.X] == c);
+        return (Box[point.Y, point.X] == value);
     }
-    public bool PointContains(Point point, char c, char c2)
+    public bool PointContains(Point point, char value, char c2)
     {
-        return (Box[point.Y, point.X] == c || Box[point.Y, point.X] == c2);
+        return (Box[point.Y, point.X] == value || Box[point.Y, point.X] == c2);
     }
 }
