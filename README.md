@@ -1,7 +1,7 @@
 # Snake game
 
-a terminal based snake game with pretty colors!
+A terminal based snake game with pretty colors!
 
-move with arrow keys
+Move with arrow keys
 
-also checkout the two-player branch for multiplayer!
+Also checkout the two-player branch for multiplayer!
